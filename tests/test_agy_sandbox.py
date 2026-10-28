@@ -27,7 +27,7 @@ def test_the_sandbox_hides_buses_and_secrets(monkeypatch):
     monkeypatch.setenv("DBUS_SESSION_BUS_ADDRESS", "unix:path=/run/user/1/bus")
     monkeypatch.setenv("SSH_AUTH_SOCK", "/run/user/1/keyring/ssh")
     argv = agy.sandbox_prefix()
-    for flag in ("--clearenv", "--unshare-pid", "--unshare-ipc", "--unshare-uts", "--die-with-parent"):
+    for flag in ("--clearenv", "--unshare-pid", "--unshare-ipc", "--unshare-uts", "--new-session", "--die-with-parent"):
         assert flag in argv
     r = subprocess.run(argv + ["sh", "-c", f"env; ls -A /run; test -e /run/user/{os.getuid()}/bus && echo BUS; true"],
                        capture_output=True, text=True, timeout=20)
@@ -39,3 +39,29 @@ def test_the_sandbox_hides_buses_and_secrets(monkeypatch):
 def test_home_is_hidden_except_the_scratch_dir():
     r = subprocess.run(agy.sandbox_prefix() + ["sh", "-c", "ls -A ~ | head"], capture_output=True, text=True, timeout=20)
     assert r.returncode == 0 and ".ssh" not in r.stdout and "Documents" not in r.stdout
+
+
+def test_dev_is_minimal_so_no_host_devices_leak_in():
+    r = subprocess.run(agy.sandbox_prefix() + ["sh", "-c", "ls /dev"], capture_output=True, text=True, timeout=20)
+    assert r.returncode == 0 and "null" in r.stdout and "urandom" in r.stdout
+    assert "sda" not in r.stdout and "nvme0n1" not in r.stdout and "video0" not in r.stdout and "dri" not in r.stdout
+
+
+@pytest.mark.skipif(not os.environ.get("DBUS_SESSION_BUS_ADDRESS") or not shutil.which("xdg-dbus-proxy") or not shutil.which("gdbus"),
+                    reason="needs a session bus, xdg-dbus-proxy and gdbus")
+def test_the_bus_inside_the_sandbox_is_filtered_to_the_keyring_only():
+    proc, sock = agy.start_bus_proxy()
+    assert proc and sock
+    try:
+        r = subprocess.run(agy.sandbox_prefix(sock) + ["gdbus", "call", "--session", "--dest", "org.freedesktop.DBus", "--object-path",
+                                                       "/org/freedesktop/DBus", "--method", "org.freedesktop.DBus.ListNames"],
+                           capture_output=True, text=True, timeout=20)
+        names = r.stdout
+        assert "org.gnome.Shell" not in names and "io.github.aiassistant" not in names, names
+        r2 = subprocess.run(agy.sandbox_prefix(sock) + ["gdbus", "call", "--session", "--dest", "org.gnome.Shell", "--object-path",
+                                                        "/org/gnome/Shell", "--method", "org.gnome.Shell.Eval", "1"],
+                            capture_output=True, text=True, timeout=20)
+        assert r2.returncode != 0, "GNOME Shell must not be reachable from the sandbox"
+    finally:
+        proc.kill()
+        os.path.exists(sock) and os.remove(sock)

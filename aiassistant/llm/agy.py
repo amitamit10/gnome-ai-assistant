@@ -4,7 +4,7 @@
 is ONLY ever run inside a bubblewrap sandbox: the system is read-only, the home directory is hidden except agy's own
 ~/.gemini state and one empty scratch directory, /run is empty (so the session bus, the system bus and ssh/gpg agent
 sockets are unreachable), the environment is rebuilt from an allowlist (no API keys, no D-Bus or display variables), and the
-process dies with its parent. `aiassistant doctor --deep` verifies the isolation with a canary file and a bus probe.
+process has its own session (no TIOCSTI keystroke injection into your terminal), a minimal /dev and dies with its parent. `aiassistant doctor --deep` verifies the isolation with a canary file and a bus probe.
 Not isolated: the network (agy needs it) and abstract unix sockets, which only a network namespace would hide. It is used as a text-only brain with a JSON protocol (see agent.py).
 Never pass --dangerously-skip-permissions here. This backend never reads agy's credentials.
 
@@ -40,23 +40,48 @@ _ENV_ALLOW = ("PATH", "LANG", "LC_ALL", "LANGUAGE", "TERM", "USER", "LOGNAME", "
               "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY", "http_proxy", "https_proxy", "no_proxy")
 
 
-def sandbox_prefix():
-    """The bubblewrap command line that confines agy (everything up to, not including, the program to run)."""
+def sandbox_prefix(bus_socket=None):
+    """The bubblewrap command line that confines agy (everything up to, not including, the program to run).
+
+    `bus_socket` is a filtered session-bus proxy socket (see start_bus_proxy); without it the sandbox has no D-Bus at all."""
     work = str(paths.ensure(paths.agy_workdir(), 0o700))
     gem = os.path.join(HOME, ".gemini")
     agy = agy_path()
-    bw = ["bwrap", "--ro-bind", "/", "/", "--dev-bind", "/dev", "/dev", "--proc", "/proc", "--tmpfs", HOME,
+    bw = ["bwrap", "--ro-bind", "/", "/", "--dev", "/dev", "--proc", "/proc", "--tmpfs", HOME,
           "--bind", gem, gem, "--bind", work, work, "--ro-bind", agy, agy,
           "--tmpfs", "/tmp", "--tmpfs", "/run", "--ro-bind-try", "/run/systemd/resolve", "/run/systemd/resolve",  # DNS only
-          "--unshare-pid", "--unshare-ipc", "--unshare-uts", "--die-with-parent", "--chdir", work, "--clearenv",
+          "--unshare-pid", "--unshare-ipc", "--unshare-uts", "--new-session", "--die-with-parent", "--chdir", work, "--clearenv",
           "--setenv", "HOME", HOME]
     for k in _ENV_ALLOW:
         if k in os.environ:
             bw += ["--setenv", k, os.environ[k]]
+    if bus_socket:
+        bw += ["--setenv", "DBUS_SESSION_BUS_ADDRESS", f"unix:path={bus_socket}"]
     ag = os.path.join(HOME, ".antigravity")
     if os.path.isdir(ag):
         bw += ["--bind", ag, ag]
     return bw
+
+
+def start_bus_proxy():
+    """agy keeps its login in the desktop keyring (Secret Service over the session bus), so it must reach the bus, but only that:
+    xdg-dbus-proxy in --filter mode lets it talk to org.freedesktop.secrets and nothing else (not GNOME Shell, not this service).
+    Returns (process, socket_path), or (None, None) when the proxy or the session bus is unavailable."""
+    addr = os.environ.get("DBUS_SESSION_BUS_ADDRESS")
+    exe = shutil.which("xdg-dbus-proxy")
+    if not addr or not exe:
+        return None, None
+    sock = os.path.join(str(paths.ensure(paths.agy_workdir(), 0o700)), f"bus-{os.getpid()}-{time.monotonic_ns()}")
+    p = subprocess.Popen([exe, addr, sock, "--filter", "--talk=org.freedesktop.secrets"], stdin=subprocess.DEVNULL,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    for _ in range(50):
+        if os.path.exists(sock):
+            return p, sock
+        if p.poll() is not None:
+            break
+        time.sleep(0.05)
+    p.kill()
+    return None, None
 
 
 class Agy:
@@ -64,14 +89,16 @@ class Agy:
         self.p = None
         self.lock = threading.Lock()
         self.last_used = time.time()
+        self.bus_proc, self.bus_sock = None, None
 
     def _argv(self):
         agy = agy_path()
-        return sandbox_prefix() + [agy, "-p=", "--input-format", "stream-json", "--output-format", "stream-json",
+        return sandbox_prefix(self.bus_sock) + [agy, "-p=", "--input-format", "stream-json", "--output-format", "stream-json",
                                    "--model", config.get("agy_model"), "--sandbox"]
 
     def _spawn(self):
         self.close()
+        self.bus_proc, self.bus_sock = start_bus_proxy()
         self.p = subprocess.Popen(self._argv(), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                   stderr=subprocess.STDOUT, text=True, bufsize=1)
 
@@ -119,7 +146,18 @@ class Agy:
             finally:
                 self.lock.release()
 
+    def _stop_bus_proxy(self):
+        proc, sock, self.bus_proc, self.bus_sock = self.bus_proc, self.bus_sock, None, None
+        if proc:
+            proc.kill()
+        if sock:
+            try:
+                os.remove(sock)
+            except OSError:
+                pass
+
     def close(self):
+        self._stop_bus_proxy()
         p, self.p = self.p, None
         if p and p.poll() is None:
             try:

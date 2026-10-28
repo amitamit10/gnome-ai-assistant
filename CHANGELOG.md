@@ -9,6 +9,6 @@
 - JSON Schema validation of widget data with precise errors; the model cannot generate widget code
 - GNOME overview semantic search (images, documents, video frames) and `ask` answers from your notes
 - Voice input with Gemini Live transcription; read-only device information
-- Gemini model fallback with hedged requests, cooldowns and retries; hardened bubblewrap sandbox for the Antigravity fallback (no buses, allowlisted environment)
+- Gemini model fallback with hedged requests, cooldowns and retries; hardened bubblewrap sandbox for the Antigravity fallback (filtered bus, allowlisted environment, own session)
 - Extension talks to the service over D-Bus (no process spawning) and has a preferences window
 - Installer/uninstaller, `aiassistant doctor`, 240+ automated tests
