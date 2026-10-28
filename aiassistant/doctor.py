@@ -143,6 +143,17 @@ def run(deep=False):
         _check("websockets (live speech-to-text)", "fail", "", "pip install websockets")
     _check("Antigravity fallback", "ok" if agy.available() else "warn", f"provider mode: {config.get('provider')}",
            "optional: needs the agy CLI and bubblewrap")
+    if agy.available():  # no LLM involved: look from inside the sandbox for the session bus, agent sockets and secret variables
+        try:
+            uid = os.getuid()
+            probe = ("test -e /run/user/%d/bus && echo BUS; test -n \"$DBUS_SESSION_BUS_ADDRESS$SSH_AUTH_SOCK$GEMINI_API_KEY$DISPLAY"
+                     "$WAYLAND_DISPLAY\" && echo ENV; ls /run | grep -v '^systemd$'") % uid
+            out = subprocess.run(agy.sandbox_prefix() + ["sh", "-c", probe], capture_output=True, text=True, timeout=20).stdout.split()
+            _check("Antigravity sandbox hides buses and secrets", "ok" if not out else "fail",
+                   "no session bus, agent sockets or key/display variables inside" if not out else f"visible inside the sandbox: {', '.join(out)}",
+                   "set provider to \"api\" until fixed")
+        except Exception as e:
+            _check("Antigravity sandbox hides buses and secrets", "warn", f"could not run: {str(e)[:80]}")
     if deep and agy.available():
         canary = os.path.join(os.path.expanduser("~"), ".aiassistant-doctor-canary")
         open(canary, "w").write("secret-canary")

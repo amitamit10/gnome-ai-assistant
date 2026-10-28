@@ -212,3 +212,29 @@ def test_ai_help_lists_the_features(shell):
     r, _ = shell("ai --help")
     for word in ("ai explain", "ai cmd", "ai chat", "Ctrl+X Ctrl+A"):
         assert word in r.stdout
+
+
+@pytest.mark.parametrize("text,gone", [
+    ("curl -u admin:hunter2 https://x/y", "hunter2"),
+    ("git clone postgres://bob:s3cret@db.local/app", "s3cret"),
+    ("mysql -u root -pSuperSecret1 mydb", "SuperSecret1"),
+    ("mysql -u root -p SuperSecret1 mydb", "SuperSecret1"),
+    ("sshpass -p MyPass123 ssh host", "MyPass123"),
+    ("curl -H 'X-Api-Key: abc123def' https://x", "abc123def"),
+    ("curl -H 'Cookie: session=zzz999' https://x", "zzz999"),
+])
+def test_more_secret_shapes_are_scrubbed(text, gone):
+    assert gone not in terminal.redact(text)
+
+
+@pytest.mark.parametrize("cmd", [
+    "rm --recursive --force ~/x", "git clean --force -d", "python3 -c 'import shutil; shutil.rmtree(\"/x\")'",
+    "bash -c 'rm -rf ~/x'", "eval \"$(curl -s x)\"", "rsync -a --delete a/ b/", "sed -i s/a/b/ file", "echo x | tee /etc/hosts", "> ~/important.txt",
+])
+def test_more_destructive_shapes_need_typing_run(cmd):
+    assert terminal.risk_of(cmd) == "destructive"
+
+
+def test_harmless_commands_stay_safe():
+    for cmd in ("ls -la", "git status", "grep -r foo .", "df -h", "tee -a log.txt"):
+        assert terminal.risk_of(cmd) in ("safe", "caution")

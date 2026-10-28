@@ -25,7 +25,11 @@ _SECRET_PATTERNS = [
     (re.compile(r"(?i)(--?(?:password|passwd|pass|token|secret|api[-_]?key|auth)(?:=|\s+))(\S+)"), r"\1<redacted>"),
     (re.compile(r"(?i)\b([A-Z0-9_]*(?:PASSWORD|PASSWD|SECRET|TOKEN|API_?KEY|PRIVATE_?KEY|CREDENTIALS?)[A-Z0-9_]*=)(\S+)"), r"\1<redacted>"),
     (re.compile(r"(?i)\b(password|passwd|pwd|token|secret|api[_-]?key)=([^\s&]+)"), r"\1=<redacted>"),
-    (re.compile(r"(https?://[^/\s:@]+:)([^@\s]+)(@)"), r"\1<redacted>\3"),           # user:pass@host
+    (re.compile(r"(\b[a-z][a-z0-9+.\-]*://[^/\s:@]+:)([^@\s]+)(@)", re.I), r"\1<redacted>\3"),   # scheme://user:pass@host (any scheme)
+    (re.compile(r"(?i)(\s(?:-u|--user|--proxy-user)(?:=|\s+)[^\s:]+:)(\S+)"), r"\1<redacted>"),    # curl -u user:pass
+    (re.compile(r"(?i)(\b(?:mysql|mysqldump|mariadb|sshpass|psql|mongo|mongosh|redis-cli)\b[^|;&\n]*?\s-p)(?=\S)(\S+)"), r"\1<redacted>"),  # -pSECRET
+    (re.compile(r"(?i)(\b(?:sshpass|mysql|mysqldump|mariadb)\b[^|;&\n]*?\s-p\s+)(\S+)"), r"\1<redacted>"),                          # -p SECRET
+    (re.compile(r"(?i)((?:^|[\s'\"])(?:[\w-]*(?:key|token|secret|auth|cookie|password)[\w-]*)\s*:\s*)([^'\"\n]+)"), r"\1<redacted>"),  # headers: X-Api-Key: ...
     (re.compile(r"\b[A-Za-z0-9+/_\-]{40,}={0,2}\b"), "<redacted>"),                    # long random-looking strings
 ]
 
@@ -44,6 +48,9 @@ _DESTRUCTIVE = [
     r"\bgit\s+push\s+.*(--force|-f)\b", r"\bgit\s+reset\s+--hard\b", r"\bgit\s+clean\s+-[a-z]*f", r"\bdrop\s+(table|database)\b", r"\btruncate\b",
     r"\bfind\b.*\s-delete\b", r"\bfind\b.*-exec\s+rm\b", r"\bxargs\s+.*\brm\b", r"\bmv\s+.*\s/dev/null\b", r"\bsudo\s+rm\b", r"\bnpm\s+publish\b",
     r"\bcurl\b.*\|\s*(sudo\s+)?(ba|z)?sh\b", r"\bwget\b.*\|\s*(sudo\s+)?(ba|z)?sh\b", r"\bkillall\b|\bpkill\s+-9\b",
+    r"\brm\s+.*--(recursive|force)\b", r"\bgit\s+clean\s+.*--force\b", r"\bgit\s+push\s+.*--force-with-lease\b",
+    r"\b(python3?|perl|ruby|node)\s+-[ce]\b", r"\b(ba|z|da)?sh\s+-c\b", r"\beval\b", r"\bbase64\s+(-d|--decode)\b.*\|",
+    r"\b(rsync|cp)\b.*--delete\b", r"\bsudo\s+(dd|mkfs|rm|chmod|chown|mv)\b", r"(^|[;&|]\s*)>\s*\S+|\b(tee)\s+(?!-a\b)(~|/|\.)", r"\b(sed|perl)\s+.*-i\b",
 ]
 _CAUTION = [r"\bsudo\b", r"\bapt(-get)?\s+(remove|purge|autoremove|install|upgrade|dist-upgrade)\b", r"\bsystemctl\s+(stop|disable|mask|restart|reboot)\b",
             r"\bkill\b", r"\breboot\b|\bshutdown\b|\bpoweroff\b", r"\bchmod\b|\bchown\b", r"\bmv\b", r"\bgit\s+(checkout|rebase|stash)\b", r"\bpip\s+uninstall\b",
