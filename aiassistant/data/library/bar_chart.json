@@ -1,0 +1,59 @@
+{
+  "description": "Horizontal bar chart to compare values across categories (sorted as given).",
+  "data_schema": "{title?, unit?, bars:[{label, value}]}",
+  "example": {
+    "title": "Disk usage by folder",
+    "unit": " GB",
+    "bars": [
+      {
+        "label": "Desktop",
+        "value": 22
+      },
+      {
+        "label": "Downloads",
+        "value": 18
+      },
+      {
+        "label": "Documents",
+        "value": 3.2
+      },
+      {
+        "label": "Pictures",
+        "value": 2.1
+      }
+    ]
+  },
+  "schema": {
+    "type": "object",
+    "required": [
+      "bars"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "unit": {
+        "type": "string"
+      },
+      "bars": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": [
+            "label",
+            "value"
+          ],
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "value": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    }
+  }
+}

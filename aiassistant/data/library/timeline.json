@@ -1,0 +1,55 @@
+{
+  "description": "Vertical timeline of events (history, schedule, steps in order, release notes).",
+  "data_schema": "{title?, events:[{time, title, description?}]}",
+  "schema": {
+    "type": "object",
+    "required": [
+      "events"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "events": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": [
+            "time",
+            "title"
+          ],
+          "properties": {
+            "time": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "example": {
+    "title": "Today",
+    "events": [
+      {
+        "time": "09:00",
+        "title": "Standup",
+        "description": "Daily sync"
+      },
+      {
+        "time": "13:30",
+        "title": "Index rebuild"
+      },
+      {
+        "time": "17:00",
+        "title": "Release"
+      }
+    ]
+  }
+}

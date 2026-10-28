@@ -1,0 +1,74 @@
+{
+  "description": "Row of key numbers (KPIs) with optional sub-label and up/down trend.",
+  "data_schema": "{title?, cards:[{label, value, sub?, trend?:'up'|'down', icon?: icon name}]}",
+  "example": {
+    "title": "Today",
+    "cards": [
+      {
+        "icon": "folder",
+        "label": "Files indexed",
+        "value": "6,129",
+        "sub": "+40 today",
+        "trend": "up"
+      },
+      {
+        "icon": "drive-harddisk",
+        "label": "Disk free",
+        "value": "51 GB",
+        "sub": "85% used",
+        "trend": "down"
+      },
+      {
+        "icon": "cpu",
+        "label": "RAM",
+        "value": "4.2 GB",
+        "sub": "available"
+      }
+    ]
+  },
+  "schema": {
+    "type": "object",
+    "required": [
+      "cards"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "cards": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": [
+            "label",
+            "value"
+          ],
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "value": {
+              "type": [
+                "string",
+                "number"
+              ]
+            },
+            "sub": {
+              "type": "string"
+            },
+            "trend": {
+              "enum": [
+                "up",
+                "down"
+              ]
+            },
+            "icon": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=AI Assistant
+Comment=The AI Assistant chat window
+# Matches the chat window's application id so GNOME Shell shows the right name and icon. It is hidden from the app grid because
+# io.github.aiassistant.Service.desktop is the visible launcher (and must NOT be hidden: see that file).
+NoDisplay=true
+Exec=@WINDOW@
+Icon=system-search
+Categories=Utility;
+Terminal=false
+StartupNotify=false

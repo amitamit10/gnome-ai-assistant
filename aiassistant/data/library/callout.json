@@ -1,0 +1,32 @@
+{
+  "description": "Highlighted note: info, success, warning or error (important caveats, tips, results of a check).",
+  "data_schema": "{kind:'info'|'success'|'warning'|'error', title?, text}",
+  "schema": {
+    "type": "object",
+    "required": [
+      "kind",
+      "text"
+    ],
+    "properties": {
+      "kind": {
+        "enum": [
+          "info",
+          "success",
+          "warning",
+          "error"
+        ]
+      },
+      "title": {
+        "type": "string"
+      },
+      "text": {
+        "type": "string"
+      }
+    }
+  },
+  "example": {
+    "kind": "warning",
+    "title": "Heads up",
+    "text": "The free Gemini quota is almost used up for today."
+  }
+}

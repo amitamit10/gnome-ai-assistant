@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=AI Assistant
+Comment=AI chat with generative widgets and semantic file search
+# NOTE: do NOT add NoDisplay=true or Hidden=true. GNOME Shell only loads a search provider whose DesktopId application
+# should_show(); a hidden entry makes the provider silently disappear.
+Exec=@CHAT@
+Icon=system-search
+Categories=Utility;
+Terminal=false
+StartupNotify=false

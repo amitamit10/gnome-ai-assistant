@@ -1,0 +1,31 @@
+{
+  "description": "Countdown timer with start, pause and reset (cooking, focus sessions, reminders). Interactive.",
+  "data_schema": "{title?, seconds, label?, autostart?:false}",
+  "schema": {
+    "type": "object",
+    "required": [
+      "seconds"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "seconds": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 86400
+      },
+      "label": {
+        "type": "string"
+      },
+      "autostart": {
+        "type": "boolean"
+      }
+    }
+  },
+  "example": {
+    "title": "Focus session",
+    "seconds": 1500,
+    "label": "Deep work"
+  }
+}

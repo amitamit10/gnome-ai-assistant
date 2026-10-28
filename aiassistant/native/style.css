@@ -1,0 +1,16 @@
+/* Only what libadwaita does not already provide; all colours are the theme's own named colours. */
+.sf-card { padding: 14px 16px; }
+.sf-user { background: @accent_bg_color; color: @accent_fg_color; border-radius: 18px; padding: 8px 14px; }
+.sf-bot { padding: 2px 2px; }
+/* tints (.sf-tile, .sf-code, .sf-callout-*, .sf-error-note backgrounds) are generated in style.py */
+.sf-tile { border-radius: 10px; padding: 10px 12px; }
+.sf-callout { border-radius: 12px; padding: 12px 14px; }
+.sf-success { color: @success_color; }
+.sf-error { color: @error_color; }
+.sf-code { border-radius: 8px; padding: 10px 12px; }
+.sf-row { border-radius: 10px; padding: 2px 6px; }
+.sf-thumb { border-radius: 8px; }
+.sf-error-note { border-radius: 12px; padding: 10px 14px; }
+.sf-chip { padding: 4px 12px; }
+.sf-input { padding: 2px 4px; }
+.sf-recording { background: @error_color; color: white; }

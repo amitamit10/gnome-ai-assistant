@@ -1,0 +1,60 @@
+{
+  "description": "List of items with title, short description and optional link (news, search results, resources).",
+  "data_schema": "{title?, items:[{title, description?, url?, meta?, icon?: icon name}]}",
+  "example": {
+    "title": "Linux news",
+    "items": [
+      {
+        "icon": "globe",
+        "title": "Kernel 7.0 released",
+        "description": "New scheduler and Rust drivers land.",
+        "url": "https://kernel.org",
+        "meta": "kernel.org"
+      },
+      {
+        "icon": "newspaper",
+        "title": "GNOME 50 beta",
+        "description": "Wayland-only session and new quick settings.",
+        "meta": "gnome.org"
+      }
+    ]
+  },
+  "schema": {
+    "type": "object",
+    "required": [
+      "items"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": [
+            "title"
+          ],
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "meta": {
+              "type": "string"
+            },
+            "icon": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

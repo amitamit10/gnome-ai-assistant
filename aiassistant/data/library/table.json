@@ -1,0 +1,53 @@
+{
+  "description": "Simple data table with a header row. Good for comparisons and lists of records.",
+  "data_schema": "{title?, columns:[string], rows:[[cell, ...]]}",
+  "example": {
+    "title": "Gemini free-tier limits",
+    "columns": [
+      "Model",
+      "Requests/day",
+      "Status"
+    ],
+    "rows": [
+      [
+        "gemini-3.8-flash",
+        "20",
+        "busy"
+      ],
+      [
+        "gemini-3.6-flash",
+        "20",
+        "ok"
+      ],
+      [
+        "gemini-3.5-flash-lite",
+        "20",
+        "ok"
+      ]
+    ]
+  },
+  "schema": {
+    "type": "object",
+    "required": [
+      "columns",
+      "rows"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "columns": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "rows": {
+        "type": "array",
+        "items": {
+          "type": "array"
+        }
+      }
+    }
+  }
+}

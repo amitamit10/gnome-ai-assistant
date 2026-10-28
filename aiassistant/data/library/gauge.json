@@ -1,0 +1,52 @@
+{
+  "description": "Semicircle gauge for one value against a range (battery, memory, disk, signal, progress). Colour turns warning/error past thresholds.",
+  "data_schema": "{title?, value, min?:0, max?:100, unit?:'%', label?, sub?, warn_at?, bad_at?, low_is_bad?:false}",
+  "schema": {
+    "type": "object",
+    "required": [
+      "value"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "value": {
+        "type": "number"
+      },
+      "min": {
+        "type": "number"
+      },
+      "max": {
+        "type": "number"
+      },
+      "unit": {
+        "type": "string"
+      },
+      "label": {
+        "type": "string"
+      },
+      "sub": {
+        "type": "string"
+      },
+      "warn_at": {
+        "type": "number"
+      },
+      "bad_at": {
+        "type": "number"
+      },
+      "low_is_bad": {
+        "type": "boolean"
+      }
+    }
+  },
+  "example": {
+    "title": "Battery",
+    "value": 53,
+    "unit": "%",
+    "label": "Discharging",
+    "sub": "about 1 h 30 min left",
+    "warn_at": 30,
+    "bad_at": 15,
+    "low_is_bad": true
+  }
+}

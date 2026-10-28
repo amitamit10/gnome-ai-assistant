@@ -1,0 +1,48 @@
+{
+  "description": "Interactive checklist with a progress bar (plans, packing lists, steps). Items can be ticked in place.",
+  "data_schema": "{title?, items:[{text, done?}]}",
+  "schema": {
+    "type": "object",
+    "required": [
+      "items"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": [
+            "text"
+          ],
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "done": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  },
+  "example": {
+    "title": "Before the trip",
+    "items": [
+      {
+        "text": "Passport",
+        "done": true
+      },
+      {
+        "text": "Charge the laptop"
+      },
+      {
+        "text": "Download maps"
+      }
+    ]
+  }
+}

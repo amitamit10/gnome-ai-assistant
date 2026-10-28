@@ -1,0 +1,27 @@
+{
+  "description": "Code or command output in a monospace block with a Copy button (scripts, config, terminal commands).",
+  "data_schema": "{title?, language?, code}",
+  "schema": {
+    "type": "object",
+    "required": [
+      "code"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "language": {
+        "type": "string"
+      },
+      "code": {
+        "type": "string",
+        "maxLength": 8000
+      }
+    }
+  },
+  "example": {
+    "title": "Restart the service",
+    "language": "bash",
+    "code": "systemctl --user restart gnome-ai-assistant"
+  }
+}

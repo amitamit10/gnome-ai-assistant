@@ -1,0 +1,58 @@
+{
+  "description": "Two-column facts list: label and value pairs with optional icons (specs, account info, device summary).",
+  "data_schema": "{title?, rows:[{label, value, icon?}]}",
+  "schema": {
+    "type": "object",
+    "required": [
+      "rows"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "rows": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": [
+            "label",
+            "value"
+          ],
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "value": {
+              "type": [
+                "string",
+                "number"
+              ]
+            },
+            "icon": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "example": {
+    "title": "This computer",
+    "rows": [
+      {
+        "label": "System",
+        "value": "Zorin OS 18.1",
+        "icon": "computer"
+      },
+      {
+        "label": "Kernel",
+        "value": "7.0.0-38-generic"
+      },
+      {
+        "label": "Session",
+        "value": "Wayland"
+      }
+    ]
+  }
+}

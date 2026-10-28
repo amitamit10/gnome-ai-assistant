@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gnome-ai-assistant"
+version = "0.1.0"
+description = "AI assistant for the GNOME desktop: semantic file search, generative UI widgets, voice input, read-only device info"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.26",
+  "pillow>=10",
+  "websockets>=12",
+  "jsonschema>=4.18",
+]
+
+[project.optional-dependencies]
+# Local embedding model for semantic file search. Large download (PyTorch); optional if you only want the chat.
+embed = ["sentence-transformers>=3", "torch", "torchvision", "av"]
+test = ["pytest>=8"]
+
+[project.scripts]
+aiassistant = "aiassistant.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["aiassistant*"]
+
+[tool.setuptools.package-data]
+aiassistant = ["data/**/*", "native/*.css"]

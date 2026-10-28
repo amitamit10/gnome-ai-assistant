@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.ai-assistant" path="/org/gnome/shell/extensions/ai-assistant/">
+    <key name="toggle-chat" type="as">
+      <default><![CDATA[['<Super>slash', '<Super>backslash']]]></default>
+      <summary>Toggle the AI Assistant window</summary>
+      <description>Keyboard shortcuts that open the chat window, or close it if it is focused.</description>
+    </key>
+    <key name="close-on-focus-out" type="b">
+      <default>true</default>
+      <summary>Close the window when it loses focus</summary>
+      <description>Dismiss the chat by clicking elsewhere. The conversation is kept by the backend service.</description>
+    </key>
+    <key name="show-panel-button" type="b">
+      <default>true</default>
+      <summary>Show the button in the top bar</summary>
+    </key>
+  </schema>
+</schemalist>

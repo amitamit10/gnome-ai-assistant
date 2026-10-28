@@ -1,0 +1,161 @@
+{
+  "description": "Weather card: current conditions, 24-hour temperature curve and 5-day forecast. Shown automatically by the get_weather tool.",
+  "data_schema": "{place, condition, temp, feels_like, humidity (%), wind (km/h), unit:'°C', hourly:[{t:'14:00',temp}], daily:[{day:'Thu',min,max,condition,rain (%)}]}",
+  "example": {
+    "place": "Jerusalem, IL",
+    "condition": "partly cloudy",
+    "temp": 24,
+    "feels_like": 23,
+    "humidity": 49,
+    "wind": 6,
+    "unit": "°C",
+    "hourly": [
+      {
+        "t": "14:00",
+        "temp": 24
+      },
+      {
+        "t": "17:00",
+        "temp": 22
+      },
+      {
+        "t": "20:00",
+        "temp": 18
+      },
+      {
+        "t": "23:00",
+        "temp": 16
+      },
+      {
+        "t": "02:00",
+        "temp": 15
+      },
+      {
+        "t": "05:00",
+        "temp": 14
+      },
+      {
+        "t": "08:00",
+        "temp": 17
+      },
+      {
+        "t": "11:00",
+        "temp": 22
+      }
+    ],
+    "daily": [
+      {
+        "day": "Wed",
+        "min": 14,
+        "max": 24,
+        "condition": "partly cloudy",
+        "rain": 0
+      },
+      {
+        "day": "Thu",
+        "min": 15,
+        "max": 27,
+        "condition": "clear sky",
+        "rain": 0
+      },
+      {
+        "day": "Fri",
+        "min": 19,
+        "max": 27,
+        "condition": "mainly clear",
+        "rain": 5
+      },
+      {
+        "day": "Sat",
+        "min": 19,
+        "max": 26,
+        "condition": "light rain",
+        "rain": 60
+      },
+      {
+        "day": "Sun",
+        "min": 17,
+        "max": 26,
+        "condition": "overcast",
+        "rain": 20
+      }
+    ]
+  },
+  "schema": {
+    "type": "object",
+    "required": [
+      "place",
+      "condition",
+      "temp"
+    ],
+    "properties": {
+      "place": {
+        "type": "string"
+      },
+      "condition": {
+        "type": "string"
+      },
+      "temp": {
+        "type": "number"
+      },
+      "feels_like": {
+        "type": "number"
+      },
+      "humidity": {
+        "type": "number"
+      },
+      "wind": {
+        "type": "number"
+      },
+      "unit": {
+        "type": "string"
+      },
+      "hourly": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "t",
+            "temp"
+          ],
+          "properties": {
+            "t": {
+              "type": "string"
+            },
+            "temp": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "daily": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "day",
+            "min",
+            "max"
+          ],
+          "properties": {
+            "day": {
+              "type": "string"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            },
+            "condition": {
+              "type": "string"
+            },
+            "rain": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    }
+  }
+}

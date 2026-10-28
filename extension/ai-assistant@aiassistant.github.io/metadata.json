@@ -1,0 +1,9 @@
+{
+  "uuid": "ai-assistant@aiassistant.github.io",
+  "name": "AI Assistant",
+  "description": "Top-bar button and keyboard shortcut for the AI Assistant chat window (generative widgets, semantic file search, voice input). Requires the gnome-ai-assistant backend service.",
+  "shell-version": ["46"],
+  "settings-schema": "org.gnome.shell.extensions.ai-assistant",
+  "url": "https://github.com/amitamit10/gnome-ai-assistant",
+  "version": 1
+}

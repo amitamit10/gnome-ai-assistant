@@ -1,0 +1,59 @@
+{
+  "description": "Donut chart showing how a total splits into parts (shares, categories, disk by type), with a legend.",
+  "data_schema": "{title?, unit?, center?, segments:[{label, value}]}",
+  "schema": {
+    "type": "object",
+    "required": [
+      "segments"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "unit": {
+        "type": "string"
+      },
+      "center": {
+        "type": "string"
+      },
+      "segments": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": [
+            "label",
+            "value"
+          ],
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "value": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "example": {
+    "title": "Index contents",
+    "center": "6,129 files",
+    "segments": [
+      {
+        "label": "Images",
+        "value": 3925
+      },
+      {
+        "label": "Documents",
+        "value": 2154
+      },
+      {
+        "label": "Videos",
+        "value": 29
+      }
+    ]
+  }
+}
