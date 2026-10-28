@@ -109,6 +109,7 @@ To add a widget see [docs/WIDGETS.md](docs/WIDGETS.md).
 | `provider` | `"auto"` | `auto`: Gemini API, then sandboxed Antigravity when out of quota; `api`: never Antigravity; `agy`: Antigravity only |
 | `models` | 7 Gemini models | tried in order; the free tier allows ~20 requests/day **per model** |
 | `agy_model` | `gemini-3.8-flash-low` | model used through the Antigravity CLI |
+| `agy_keyring` | `false` | let the sandboxed Antigravity reach your desktop keyring (needed if its login is stored there); exposes every keyring secret to it, see [SECURITY.md](SECURITY.md) |
 | `stt_model` | `gemini-3.5-transcribe-live` | live transcription model |
 | `index_roots` | Documents, Downloads, Desktop, Pictures, Videos | folders to index |
 | `embed_model` | `google/embeddinggemma-2` | embedding model (must match the index) |

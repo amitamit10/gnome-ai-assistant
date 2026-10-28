@@ -13,6 +13,7 @@ DEFAULTS = {
     "models": ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.5-flash",
                "gemini-3-flash-preview", "gemini-3.5-flash-lite", "gemini-flash-lite-latest"],
     "agy_model": "gemini-3.8-flash-low",
+    "agy_keyring": False,  # opt-in: let the sandboxed agy reach the desktop keyring (Secret Service) through a filtered bus
     "stt_model": "gemini-3.5-transcribe-live",
     # semantic search: folders to index, and which embedding model (must match the index; see `aiassistant index`)
     "index_roots": ["~/Documents", "~/Downloads", "~/Desktop", "~/Pictures", "~/Videos"],

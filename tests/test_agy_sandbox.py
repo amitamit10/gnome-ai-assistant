@@ -65,3 +65,21 @@ def test_the_bus_inside_the_sandbox_is_filtered_to_the_keyring_only():
     finally:
         proc.kill()
         os.path.exists(sock) and os.remove(sock)
+
+
+def test_keyring_access_is_off_by_default(monkeypatch):
+    started = []
+    monkeypatch.setattr(agy, "start_bus_proxy", lambda: started.append(1) or (None, None))
+    a = agy.Agy()
+    a._spawn = agy.Agy._spawn.__get__(a)
+    class FakeProc:
+        stdin = type("S", (), {"close": lambda s: None})()
+        poll = lambda s: None
+        terminate = wait = kill = lambda s, *a, **k: None
+    monkeypatch.setattr(agy.subprocess, "Popen", lambda *x, **k: FakeProc())
+    a._spawn()
+    assert started == [] and a.bus_sock is None and "DBUS_SESSION_BUS_ADDRESS" not in a._argv()
+    from aiassistant import config
+    config.save({"agy_keyring": True})
+    a._spawn()
+    assert started == [1]

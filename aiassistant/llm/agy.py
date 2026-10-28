@@ -98,7 +98,8 @@ class Agy:
 
     def _spawn(self):
         self.close()
-        self.bus_proc, self.bus_sock = start_bus_proxy()
+        # off by default: the Secret Service has no per-application access control, so this exposes every secret in the keyring
+        self.bus_proc, self.bus_sock = start_bus_proxy() if config.get("agy_keyring") else (None, None)
         self.p = subprocess.Popen(self._argv(), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                   stderr=subprocess.STDOUT, text=True, bufsize=1)
 
@@ -132,7 +133,11 @@ class Agy:
                         res = ev["result"]
                         self.last_used = time.time()
                         if res.get("status") != "SUCCESS":
-                            raise AgyError("Antigravity error: " + str(res.get("error") or res.get("status"))[:150])
+                            msg = str(res.get("error") or res.get("status"))[:150]
+                            if "authentication" in msg.lower() and not self.bus_sock:
+                                msg += (" (agy keeps its login in the desktop keyring, which the sandbox hides by default; to allow it, "
+                                        "run: aiassistant config set agy_keyring true. Read SECURITY.md first.)")
+                            raise AgyError("Antigravity error: " + msg)
                         return res.get("response", "")
                 self.close()
                 if time.time() - t0 >= timeout:
